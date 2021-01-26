@@ -8,6 +8,6 @@ namespace FigureWebAPI.Models {
             Database.EnsureCreated();
         }
 
-        public DbSet<CreateFigure> CreateFigures { get; set; }
+        public DbSet<CreateFigure> Figures { get; set; }
     }
 }

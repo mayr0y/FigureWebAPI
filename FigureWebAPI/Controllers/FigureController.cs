@@ -25,14 +25,14 @@ namespace FigureWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CreateFigure>>> GetCreateFigures()
         {
-            return await _context.CreateFigures.ToListAsync();
+            return await _context.Figures.ToListAsync();
         }
 
         // GET: api/Figure/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CreateFigure>> GetCreateFigure(long id)
         {
-            var createFigure = await _context.CreateFigures.FindAsync(id);
+            var createFigure = await _context.Figures.FindAsync(id);
 
             if (createFigure == null)
             {
@@ -78,7 +78,7 @@ namespace FigureWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<CreateFigure>> PostCreateFigure(CreateFigure createFigure)
         {
-            _context.CreateFigures.Add(createFigure);
+            _context.Figures.Add(createFigure);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetCreateFigure), new { id = createFigure.Id }, createFigure);
         }
@@ -87,13 +87,13 @@ namespace FigureWebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCreateFigure(long id)
         {
-            var createFigure = await _context.CreateFigures.FindAsync(id);
+            var createFigure = await _context.Figures.FindAsync(id);
             if (createFigure == null)
             {
                 return NotFound();
             }
 
-            _context.CreateFigures.Remove(createFigure);
+            _context.Figures.Remove(createFigure);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace FigureWebAPI.Controllers
 
         private bool CreateFigureExists(long id)
         {
-            return _context.CreateFigures.Any(e => e.Id == id);
+            return _context.Figures.Any(e => e.Id == id);
         }
     }
 }

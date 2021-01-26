@@ -1,0 +1,209 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Расчет площади треугольника</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <h2>Расчет площади треугольника</h2>
+    <form name="userForm">
+        <input type="hidden" name="id" value="0" />
+        <div class="form-group col-md-5">
+            <label for="name">Имя фигуры:</label>
+            <input class="form-control" name="name" />
+        </div>
+        <div class="form-group col-md-5">
+            <label for="firstSide">Первая сторона:</label>
+            <input class="form-control" name="firstSide" type="number" />
+        </div>
+        <div class="form-group col-md-5">
+            <label for="secondSide">Вторая сторона:</label>
+            <input class="form-control" name="secondSide" type="number" />
+        </div>
+        <div class="form-group col-md-5">
+            <label for="thirdSide">Третья сторона:</label>
+            <input class="form-control" name="thirdSide" type="number" />
+        </div>
+        <div class="panel-body">
+            <button type="submit" id="submit" class="btn btn-primary">Сохранить</button>
+            <a id="reset" class="btn btn-primary">Сбросить</a>
+        </div>
+    </form>
+    <table class="table table-condensed table-striped  col-md-6">
+        <thead><tr><th>Id</th><th>Имя</th><th>Первая сторона</th><th>Вторая сторона</th><th>Третья сторона</th><th>Площадь</th></tr></thead>
+        <tbody>
+        </tbody>
+    </table>
+    <div></div>
+    <script>
+        async function GetCreateFigures() {
+            // отправляет запрос и получаем ответ
+            const response = await fetch("/api/figure", {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+            // если запрос прошел нормально
+            if (response.ok === true) {
+                const figure = await response.json();
+                let rows = document.querySelector("tbody");
+                figure.forEach(figures => {
+                    rows.append(row(figures));
+                });
+            }
+        }
+        // Получение
+        async function GetFigures(id) {
+            const response = await fetch("/api/figure/" + id, {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                const figures = await response.json();
+                const form = document.forms["userForm"];
+                form.elements["id"].value = figures.id;
+                form.elements["name"].value = figures.name;
+                form.elements["firstSide"].value = figures.firstSide;
+                form.elements["secondSide"].value = figures.secondSide;
+                form.elements["thirdSide"].value = figures.thirdSide;
+            }
+        }
+     
+        async function PostCreateFigure(figuresName, figuresFirstSide, figuresSecondSide, figuresThirdSide) {
+
+            const response = await fetch("api/figure", {
+                method: "POST",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: figuresName,
+                    firstSide: parseInt(figuresFirstSide, 10),
+                    secondSide: parseInt(figuresSecondSide, 10),
+                    thirdSide: parseInt(figuresThirdSide, 10)
+                })
+            });
+            if (response.ok === true) {
+                const figures = await response.json();
+                reset();
+                document.querySelector("tbody").append(row(figures));
+            }
+        }
+        // Изменение 
+        async function EditFigure(figuresId, figuresName, figuresFirstSide, figuresSecondSide, figuresThirdSide) {
+            const response = await fetch("api/figure", {
+                method: "PUT",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: parseInt(figuresId, 10),
+                    name: figuresName,
+                    firstSide: parseInt(figuresFirstSide, 10),
+                    seconSide: parseInt(figuresSecondSide, 10),
+                    thirdSide: parseInt(figuresThirdSide, 10)
+                })
+            });
+            if (response.ok === true) {
+                const figures = await response.json();
+                reset();
+                document.querySelector("tr[data-rowid='" + figures.id + "']").replaceWith(row(figures));
+            }
+        }
+        // Удаление 
+        async function DeleteCreateFigure(id) {
+            const response = await fetch("/api/figure/" + id, {
+                method: "DELETE",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                const figures = await response.json();
+                document.querySelector("tr[data-rowid='" + figures.id + "']").remove();
+            }
+        }
+
+        //сброс
+        function reset() {
+            const form = document.forms["userForm"];
+            form.reset();
+            form.elements["id"].value = 0;
+        }
+        
+        function row(figures) {
+
+            const tr = document.createElement("tr");
+            tr.setAttribute("data-rowid", figures.id);
+
+            const idTd = document.createElement("td");
+            idTd.append(figures.id);
+            tr.append(idTd);
+
+            const nameTd = document.createElement("td");
+            nameTd.append(figures.name);
+            tr.append(nameTd);
+
+            const firstSideTd = document.createElement("td");
+            firstSideTd.append(figures.firstSide);
+            tr.append(firstSideTd);
+
+            const secondSideTd = document.createElement("td");
+            secondSideTd.append(figures.secondSide);
+            tr.append(secondSideTd);
+
+            const thirdSideTd = document.createElement("td");
+            thirdSideTd.append(figures.thirdSide);
+            tr.append(thirdSideTd);
+
+            const linksTd = document.createElement("td");
+
+            const editLink = document.createElement("a");
+            editLink.setAttribute("data-id", figures.id);
+            editLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            editLink.append("Изменить");
+            editLink.addEventListener("click", e => {
+
+                e.preventDefault();
+                GetCreateFigures(figures.id);
+            });
+
+            linksTd.append(editLink);
+
+            const removeLink = document.createElement("a");
+            removeLink.setAttribute("data-id", figures.id);
+            removeLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            removeLink.append("Удалить");
+            removeLink.addEventListener("click", e => {
+
+                e.preventDefault();
+                DeleteCreateFigure(figures.id);
+            });
+
+            linksTd.append(removeLink);
+            tr.appendChild(linksTd);
+
+            return tr;
+        }
+        // сброс значений формы
+        document.getElementById("reset").click(function (e) {
+
+            e.preventDefault();
+            reset();
+        })
+
+        // отправка формы
+        document.forms["userForm"].addEventListener("submit", e => {
+            e.preventDefault();
+            const form = document.forms["userForm"];
+            const id = form.elements["id"].value;
+            const name = form.elements["name"].value;
+            const firstSide = form.elements["firstSide"].value;
+            const secondSide = form.elements["secondSide"].value;
+            const thirdSide = form.elements["thirdSide"].value;
+            if (id == 0)
+                PostCreateFigure(name, firstSide, secondSide, thirdSide);
+            else
+                EditUser(id, name, firstSide, secondSide, thirdSide);
+        });
+
+        // загрузка
+        GetCreateFigures();
+    </script>
+</body>
+</html>
