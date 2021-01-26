@@ -31,8 +31,8 @@
             <a id="reset" class="btn btn-primary">Сбросить</a>
         </div>
     </form>
-    <table class="table table-condensed table-striped  col-md-6">
-        <thead><tr><th>Id</th><th>Имя</th><th>Первая сторона</th><th>Вторая сторона</th><th>Третья сторона</th><th>Площадь</th></tr></thead>
+    <table class="table table-condensed table-striped  col-md-4">
+        <thead><tr><th>Id</th><th>Имя</th><th>Площадь</th></tr></thead>
         <tbody>
         </tbody>
     </table>
@@ -67,6 +67,7 @@
                 form.elements["firstSide"].value = figures.firstSide;
                 form.elements["secondSide"].value = figures.secondSide;
                 form.elements["thirdSide"].value = figures.thirdSide;
+                form.elements["figureArea"].value = figures.figureArea;
             }
         }
      
@@ -107,17 +108,6 @@
                 document.querySelector("tr[data-rowid='" + figures.id + "']").replaceWith(row(figures));
             }
         }
-        // Удаление 
-        async function DeleteCreateFigure(id) {
-            const response = await fetch("/api/figure/" + id, {
-                method: "DELETE",
-                headers: { "Accept": "application/json" }
-            });
-            if (response.ok === true) {
-                const figures = await response.json();
-                document.querySelector("tr[data-rowid='" + figures.id + "']").remove();
-            }
-        }
 
         //сброс
         function reset() {
@@ -139,43 +129,13 @@
             nameTd.append(figures.name);
             tr.append(nameTd);
 
-            const firstSideTd = document.createElement("td");
-            firstSideTd.append(figures.firstSide);
-            tr.append(firstSideTd);
-
-            const secondSideTd = document.createElement("td");
-            secondSideTd.append(figures.secondSide);
-            tr.append(secondSideTd);
-
-            const thirdSideTd = document.createElement("td");
-            thirdSideTd.append(figures.thirdSide);
-            tr.append(thirdSideTd);
+            const figureAreaTd = document.createElement("td");
+            figureAreaTd.append(figures.figureArea);
+            tr.append(figureAreaTd);
 
             const linksTd = document.createElement("td");
 
-            const editLink = document.createElement("a");
-            editLink.setAttribute("data-id", figures.id);
-            editLink.setAttribute("style", "cursor:pointer;padding:15px;");
-            editLink.append("Изменить");
-            editLink.addEventListener("click", e => {
-
-                e.preventDefault();
-                GetCreateFigures(figures.id);
-            });
-
-            linksTd.append(editLink);
-
-            const removeLink = document.createElement("a");
-            removeLink.setAttribute("data-id", figures.id);
-            removeLink.setAttribute("style", "cursor:pointer;padding:15px;");
-            removeLink.append("Удалить");
-            removeLink.addEventListener("click", e => {
-
-                e.preventDefault();
-                DeleteCreateFigure(figures.id);
-            });
-
-            linksTd.append(removeLink);
+    
             tr.appendChild(linksTd);
 
             return tr;

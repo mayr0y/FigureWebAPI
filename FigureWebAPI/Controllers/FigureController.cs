@@ -25,6 +25,7 @@ namespace FigureWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CreateFigure>>> GetCreateFigures()
         {
+
             return await _context.Figures.ToListAsync();
         }
 
