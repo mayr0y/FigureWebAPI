@@ -8,6 +8,7 @@
 </head>
 <body>
     <h2>Расчет площади треугольника</h2>
+    <div id="errors" class="alert alert-danger" style="display:none;"></div>
     <form name="userForm">
         <input type="hidden" name="id" value="0" />
         <div class="form-group col-md-5">
@@ -37,8 +38,7 @@
         </tbody>
     </table>
     <div></div>
-    <script>
-        async function GetCreateFigures() {
+    <script>async function GetCreateFigures() {
             // отправляет запрос и получаем ответ
             const response = await fetch("/api/figure", {
                 method: "GET",
@@ -70,7 +70,7 @@
                 form.elements["figureArea"].value = figures.figureArea;
             }
         }
-     
+        //добавление
         async function PostCreateFigure(figuresName, figuresFirstSide, figuresSecondSide, figuresThirdSide) {
 
             const response = await fetch("api/figure", {
@@ -87,9 +87,39 @@
                 const figures = await response.json();
                 reset();
                 document.querySelector("tbody").append(row(figures));
+            } else {
+                const errorData = await response.json();
+                console.log("errors", errorData);
+                if (errorData) {
+                    // ошибки вследствие валидации по атрибутам
+                    if (errorData.errors) {
+                        if (errorData.errors["Name"]) {
+                            addError(errorData.errors["Name"]);
+                        }
+                        if (errorData.errors["FirstSide"]) {
+                            addError(errorData.errors["FirstSide"]);
+                        }
+                        if (errorData.errors["SecondSide"]) {
+                            addError(errorData.errors["SecondSide"]);
+                        }
+                        if (errorData.errors["ThirdSide"]) {
+                            addError(errorData.errors["ThirdSide"]);
+                        }
+                    }
+                    // кастомные ошибки, определенные в контроллере
+                    if (errorData["Name1"]) {
+                        addError(errorData["Name1"]);
+                    }
+                    if (errorData["FigureArea"]) {
+                        addError(errorData["FigureArea"]);
+                    }
+      
+                }
+
+                document.getElementById("errors").style.display = "block";
             }
         }
-        // Изменение 
+        // Изменение
         async function EditFigure(figuresId, figuresName, figuresFirstSide, figuresSecondSide, figuresThirdSide) {
             const response = await fetch("api/figure", {
                 method: "PUT",
@@ -115,7 +145,15 @@
             form.reset();
             form.elements["id"].value = 0;
         }
-        
+
+        function addError(errors) {
+            errors.forEach(error => {
+                const p = document.createElement("p");
+                p.append(error);
+                document.getElementById("errors").append(p);
+            });
+        }
+
         function row(figures) {
 
             const tr = document.createElement("tr");
@@ -135,7 +173,7 @@
 
             const linksTd = document.createElement("td");
 
-    
+
             tr.appendChild(linksTd);
 
             return tr;
@@ -163,7 +201,6 @@
         });
 
         // загрузка
-        GetCreateFigures();
-    </script>
+        GetCreateFigures();</script>
 </body>
 </html>
