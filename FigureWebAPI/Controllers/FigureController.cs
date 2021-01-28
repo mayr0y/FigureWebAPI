@@ -78,17 +78,21 @@ namespace FigureWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<CreateFigure>> PostCreateFigure(CreateFigure createFigure)
         {
-            //Попытка сделать проверку на существование треугольника.
+            //проверка на существование треугольника
+            _context.Figures.Add(createFigure);
+
             if (createFigure.FirstSide > createFigure.SecondSide + createFigure.ThirdSide)
-                ModelState.AddModelError("Name1", "Треугольник не существует");
+                ModelState.AddModelError("FigureArea", "Треугольник не существует");
+            
             if (createFigure.SecondSide > createFigure.FirstSide + createFigure.ThirdSide)
                 ModelState.AddModelError("FigureArea", "Треугольник не существует");
-           
-           
+
+            if (createFigure.ThirdSide > createFigure.FirstSide + createFigure.SecondSide)
+                ModelState.AddModelError("FigureArea", "Треугольник не существует");
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            _context.Figures.Add(createFigure);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetCreateFigure), new { id = createFigure.Id }, createFigure);
         }

@@ -7,14 +7,14 @@ namespace FigureWebAPI.Models {
         [Required(ErrorMessage = "Укажите имя фигуры")]
         public string Name { get; set; }
         [Range(1, 100, ErrorMessage = "Длина стороны должна быть положительная")]
-        public int FirstSide { get; set; }
+        public double FirstSide { get; set; }
         [Range(1, 100, ErrorMessage = "Длина стороны должна быть положительная")]
-        public int SecondSide { get; set; }
+        public double SecondSide { get; set; }
         [Range(1, 100, ErrorMessage = "Длина стороны должна быть положительная")]
-        public int ThirdSide { get; set; }
-        public int FigureArea { get; set; }
+        public double ThirdSide { get; set; }
+        public double FigureArea { get; set; }
 
-        public CreateFigure(int firstSide, int secondSide, int thirdSide) {
+        public CreateFigure(double firstSide, double secondSide, double thirdSide) {
             FirstSide = (firstSide);
             SecondSide = (secondSide);
             ThirdSide = (thirdSide);
@@ -23,7 +23,7 @@ namespace FigureWebAPI.Models {
             var area = Math.Sqrt(halfPerimetr * (halfPerimetr - firstSide) *
                                                 (halfPerimetr - secondSide) *
                                                 (halfPerimetr - thirdSide));
-            FigureArea = Convert.ToInt32(area);
+            FigureArea = Convert.ToDouble(area);
         }   
     }
 }
